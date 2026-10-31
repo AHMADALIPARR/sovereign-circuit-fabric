@@ -1,78 +1,134 @@
 # Sovereign Circuit Fabric
 
-**Native Telecommunications Exchange**
+Native virtual-circuit exchange. Not a Linux wrapper. Not TCP/IP internally.
 
-Independent virtual-circuit switching system built from first principles.
-No Linux dependency for the core exchange, no inherited Unix networking stack, no TCP/IP for internal switching.
+Specs, actors, P4, VHDL, TLA+, fixed-point pricing. Console that runs the model: [circuit-fabric](https://github.com/AHMADALIPARR/circuit-fabric).
 
-## Architecture Overview
+---
 
-| Subsystem            | Language     | Responsibility                                      |
-|----------------------|--------------|-----------------------------------------------------|
-| Packet processing    | P4_16        | Parsing, classification, match-action forwarding    |
-| Provisioning         | Tcl 9        | Configuration, circuit commands, tariff management  |
-| Circuit logic        | Gödel        | Declarative route selection and admission           |
-| Orchestration        | Dylan        | Route compilation, circuit control, interfaces      |
-| Exchange runtime     | Erlang/BEAM  | Circuit actors, state machines, supervision         |
-| State verification   | TLA+         | Distributed invariants and temporal properties      |
-| Mathematical proofs  | WhyML/Why3   | Capacity, routing, arithmetic correctness           |
-| Contract verification| Dafny        | Preconditions, postconditions, accounting contracts |
-| Hardware             | VHDL         | Switching fabric, buffers, arbitration, ports, DMA  |
+## Console photos
 
-## Circuit Lifecycle
+Live BEAM UI driving this model (form posts, no client JS):
 
+![Fabric tab](https://raw.githubusercontent.com/AHMADALIPARR/circuit-fabric/main/images/fabric.png)
+
+![Circuits tab](https://raw.githubusercontent.com/AHMADALIPARR/circuit-fabric/main/images/circuits.png)
+
+---
+
+## Stack
+
+![Architecture stack](https://raw.githubusercontent.com/AHMADALIPARR/sovereign-circuit-fabric/main/docs/images/stack.svg)
+
+| Layer | Language | Path |
+| --- | --- | --- |
+| Frame, resources, tariffs | Spec | `spec/` |
+| State invariants | TLA+ | `formal/tla/` |
+| Circuit actors | Erlang | `control/beam/` |
+| Provisioning | Tcl 9 | `control/tcl/` |
+| Admission logic | Godel spec | `control/godel/` |
+| Forwarding | P4_16 | `datapath/p4/` |
+| Crossbar | VHDL | `hardware/vhdl/` |
+| Pricing | Erlang + UUIE | `accounting/` |
+
+---
+
+## Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> FREE
+    FREE --> REQUESTED: request
+    REQUESTED --> ADMITTED: admit
+    REQUESTED --> FREE: reject
+    ADMITTED --> RESERVED: reserve
+    RESERVED --> INSTALLED: install
+    INSTALLED --> ACTIVE: activate
+    ACTIVE --> DRAINING: drain
+    DRAINING --> RELEASED: release
+    ADMITTED --> FAILED: fail
+    RESERVED --> FAILED: fail
+    INSTALLED --> FAILED: fail
+    ACTIVE --> FAILED: fail
+    FAILED --> RELEASED: release
+    RELEASED --> FREE: recycle
 ```
-FREE → REQUESTED → ADMITTED → RESERVED → INSTALLED → ACTIVE → DRAINING → RELEASED
+
+| State | Meaning |
+| --- | --- |
+| FREE | idle id |
+| REQUESTED | setup pending |
+| ADMITTED | policy ok, tariff locked |
+| RESERVED | bandwidth held |
+| INSTALLED | tables written |
+| ACTIVE | carrying data |
+| DRAINING | teardown |
+| RELEASED | final charge |
+| FAILED | fault path still releases |
+
+---
+
+## Frame
+
+20-byte header. Magic SCF. Network byte order.
+
+| Offset | Size | Field |
+| --- | ---: | --- |
+| 0 | 2 | magic |
+| 2 | 1 | version |
+| 3 | 1 | flags |
+| 4 | 4 | circuit id |
+| 8 | 2 | namespace |
+| 10 | 1 | priority |
+| 11 | 1 | QoS |
+| 12 | 4 | sequence |
+| 16 | 2 | payload length |
+| 18 | 2 | checksum |
+
+Full layout: `spec/circuit_frame.md`
+
+---
+
+## Pricing
+
+```text
+charge = setup + reserved + usage + priority
 ```
 
-Failure, rollback, timeout, and recovery transitions are explicit and deterministic.
+Integer minor units only. See `spec/tariff_arithmetic.md` and `accounting/pricing.erl`.
 
-## Implementation Phases
+---
 
-- **Phase I** — Mathematical exchange model (frame encoding, circuit IDs, state machine, resource model, tariff arithmetic)
-- **Phase II** — Formal specification (TLA+, WhyML, Dafny)
-- **Phase III** — Software control plane (Gödel, Dylan, Tcl, BEAM)
-- **Phase IV** — Programmable datapath (P4_16)
-- **Phase V** — Hardware fabric (VHDL)
-- **Phase VI** — Native runtime (non-Linux platform integration)
-- **Phase VII** — End-to-end validation
+## Tree
 
-## Repository Layout
-
-```
-spec/                 Phase I mathematical model & binary formats
-formal/               TLA+, WhyML, Dafny artifacts
-control/
-  godel/              Declarative circuit logic (spec + toolchain notes)
-  dylan/              Orchestration
-  tcl/                Provisioning interface
-  beam/               Erlang circuit actors
-datapath/
-  p4/                 P4_16 forwarding pipeline
-hardware/
-  vhdl/               Switching fabric modules + testbenches
-accounting/           Fixed-point integer pricing engine
-docs/                 Architecture & interface specifications
+```text
+spec/           Phase I math model
+formal/tla/     CircuitState.tla + cfg
+control/beam/   circuit_actor + tests
+control/tcl/    provision.tcl
+control/godel/  blocked toolchain note
+datapath/p4/    circuit_forward.p4
+hardware/vhdl/  scf_crossbar.vhd
+accounting/     pricing.erl + uuie/
 ```
 
-## Engineering Principle
+| Artifact | Evidence |
+| --- | --- |
+| `control/beam/run_tests.sh` | actor suite |
+| `formal/tla/CircuitState.tla` | TLC model |
+| `STATUS.md` | what is proven vs blocked |
+| `HANDOFF.md` | remaining phases |
+
+---
+
+## Principle
 
 **Evidence or Silence.**
 
-A compiled file is not proof of correct behavior.  
-A simulation is not proof of hardware timing closure.  
-A verified mathematical model is not automatically proof of its implementation.
+No fabricated compiler output. No fake proofs. Godel stays specification-only until a real toolchain exists.
 
-Every claim is tracked to actual evidence. No placeholders, no stubs, no fabricated results.
-
-## Getting Started
-
-See `spec/README.md` for the binary circuit-frame format, resource model, and state machine invariants that must be established before any datapath or control-plane code is trusted.
-
-## Status
-
-Phase I artifacts are present. Subsequent phases contain real source where toolchains permit; blocked historical toolchains (Gödel) are documented with preserved specifications rather than fabricated execution.
+---
 
 ## License
 
-See LICENSE.
+See `LICENSE`.
