@@ -52,7 +52,7 @@ This document records what has been delivered, what remains to satisfy the maste
 
 - `README.md` — architecture table + phase plan  
 - `STATUS.md` — artifact vs blocked list  
-- `LICENSE` — MIT  
+- `LICENSE` — SnapKitty Opaque Source License  
 - `HANDOFF.md` — this file  
 
 ---
