@@ -7,7 +7,7 @@ Custom frame format. Ethernet/IP are not required for internal exchange traffic.
 ```
 Offset  Size  Field                 Description
 ------  ----  --------------------  -----------------------------------------------
-0       2     Magic                 0xSCF1 ("Sovereign Circuit Fabric 1")
+0       2     Magic                 0x5343 ("SC", ASCII)
 2       1     Version               Currently 0x01
 3       1     Flags                 bit0 = control, bit1 = data, bit2 = OAM
 4       4     CircuitID             32-bit identifier within namespace
@@ -24,7 +24,7 @@ Total fixed header size: **20 bytes**.
 
 ## Rules
 
-- Frames with Magic != 0xSCF1 are dropped at ingress.
+- Frames with Magic != 0x5343 are dropped at ingress.
 - Version must equal 0x01; higher versions are rejected until negotiated.
 - CircuitID = 0 is reserved (invalid).
 - PayloadLength must match the actual bytes present after the header.

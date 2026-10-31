@@ -1,14 +1,14 @@
 /* -*- P4_16 -*- */
 /*
  * Sovereign Circuit Fabric — P4_16 Forwarding Pipeline
- * Custom circuit-frame format (Magic 0xSCF1).
+ * Custom circuit-frame format (Magic 0x5343).
  * No assumption of Ethernet or IP for internal switching.
  */
 
 #include <core.p4>
 #include <v1model.p4>
 
-const bit<16> SCF_MAGIC = 0xSCF1;
+const bit<16> SCF_MAGIC = 0x5343;
 const bit<8>  SCF_VERSION = 0x01;
 
 typedef bit<32> CircuitId_t;
