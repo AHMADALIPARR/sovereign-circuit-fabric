@@ -1,0 +1,31 @@
+CAPACITY_SCALE = 1000000000
+TRAFFIC_SCALE = 1
+
+@Circuit[N] {
+    id          : u64
+    account     : u64
+    bandwidth   : u64
+    duration_ns : u64
+    bytes       : u64
+    tariff      : u32
+    state       : u8
+}
+
+@Rate[T] {
+    setup_minor   : i64
+    capacity_rate : u64
+    byte_rate     : u64
+    version       : u32
+}
+
+#Active = Circuit # (state == ACTIVE)
+
+@Setup[N]    = Rate[tariff].setup_minor
+@Capacity[N] = round_div(Circuit.bandwidth ⊙ Circuit.duration_ns ⊙ Rate[tariff].capacity_rate, CAPACITY_SCALE)
+@Traffic[N]  = round_div(Circuit.bytes ⊙ Rate[tariff].byte_rate, TRAFFIC_SCALE)
+@Charge[N]   = Setup + Capacity + Traffic
+
+Σ Reserved = sum_checked(#Active.bandwidth)
+Σ Revenue  = sum_checked(Charge)
+
+Charge → Ledger
