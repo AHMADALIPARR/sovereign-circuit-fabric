@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="ui-sans-serif,system-ui,sans-serif">
+  <rect width="900" height="520" fill="#0d1117"/>
+  <text x="450" y="36" text-anchor="middle" fill="#f0f6fc" font-size="22" font-weight="700">Sovereign Circuit Fabric</text>
+  <text x="450" y="58" text-anchor="middle" fill="#8b949e" font-size="13">virtual circuits · formal control · programmable datapath · VHDL fabric</text>
+
+  <rect x="40" y="80" width="200" height="70" rx="10" fill="#161b22" stroke="#58a6ff" stroke-width="2"/>
+  <text x="140" y="110" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">P4_16</text>
+  <text x="140" y="132" text-anchor="middle" fill="#e6edf3" font-size="12">datapath</text>
+
+  <rect x="260" y="80" width="200" height="70" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="2"/>
+  <text x="360" y="110" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="700">Erlang BEAM</text>
+  <text x="360" y="132" text-anchor="middle" fill="#e6edf3" font-size="12">circuit actors</text>
+
+  <rect x="480" y="80" width="200" height="70" rx="10" fill="#161b22" stroke="#a371f7" stroke-width="2"/>
+  <text x="580" y="110" text-anchor="middle" fill="#a371f7" font-size="12" font-weight="700">Tcl 9</text>
+  <text x="580" y="132" text-anchor="middle" fill="#e6edf3" font-size="12">provisioning</text>
+
+  <rect x="700" y="80" width="160" height="70" rx="10" fill="#161b22" stroke="#f85149" stroke-width="2"/>
+  <text x="780" y="110" text-anchor="middle" fill="#f85149" font-size="12" font-weight="700">VHDL</text>
+  <text x="780" y="132" text-anchor="middle" fill="#e6edf3" font-size="12">crossbar</text>
+
+  <rect x="40" y="180" width="400" height="150" rx="12" fill="#161b22" stroke="#30363d"/>
+  <text x="60" y="210" fill="#e6edf3" font-size="14" font-weight="700">Lifecycle</text>
+  <text x="60" y="240" fill="#8b949e" font-size="12">FREE REQUESTED ADMITTED RESERVED</text>
+  <text x="60" y="262" fill="#8b949e" font-size="12">INSTALLED ACTIVE DRAINING RELEASED</text>
+  <text x="60" y="284" fill="#f85149" font-size="12">FAILED then RELEASED</text>
+  <text x="60" y="310" fill="#3fb950" font-size="12">one gen_statem per circuit</text>
+
+  <rect x="460" y="180" width="400" height="150" rx="12" fill="#161b22" stroke="#30363d"/>
+  <text x="480" y="210" fill="#e6edf3" font-size="14" font-weight="700">Formal</text>
+  <text x="480" y="240" fill="#8b949e" font-size="12">TLA+ CircuitState model</text>
+  <text x="480" y="262" fill="#8b949e" font-size="12">WhyML / Why3 capacity arithmetic</text>
+  <text x="480" y="284" fill="#8b949e" font-size="12">Dafny contracts</text>
+  <text x="480" y="310" fill="#e3b341" font-size="12">Evidence or Silence</text>
+
+  <rect x="40" y="360" width="820" height="130" rx="12" fill="#161b22" stroke="#58a6ff" stroke-width="2"/>
+  <text x="60" y="390" fill="#58a6ff" font-size="14" font-weight="700">Phase I frame</text>
+  <text x="60" y="420" fill="#e6edf3" font-size="13">20-byte header · magic SCF · circuit id · namespace · priority · QoS · sequence · length · checksum</text>
+  <text x="60" y="450" fill="#8b949e" font-size="12">No Ethernet or IP required for internal switching · fixed-point tariff arithmetic · resource conservation</text>
+  <text x="60" y="475" fill="#8b949e" font-size="12">Console runtime: github.com/AHMADALIPARR/circuit-fabric</text>
+</svg>
