@@ -2,23 +2,12 @@
 
 Native virtual-circuit exchange. Not a Linux wrapper. Not TCP/IP internally.
 
-Specs, actors, P4, VHDL, TLA+, fixed-point pricing. Console that runs the model: [circuit-fabric](https://github.com/AHMADALIPARR/circuit-fabric).
-
----
-
-## Console photos
-
-Live BEAM UI driving this model (form posts, no client JS):
-
-![Fabric tab](https://raw.githubusercontent.com/AHMADALIPARR/circuit-fabric/main/images/fabric.png)
-
-![Circuits tab](https://raw.githubusercontent.com/AHMADALIPARR/circuit-fabric/main/images/circuits.png)
+Specs, actors, P4, VHDL, TLA+, fixed-point pricing.  
+Runnable console: [circuit-fabric](https://github.com/AHMADALIPARR/circuit-fabric).
 
 ---
 
 ## Stack
-
-![Architecture stack](https://raw.githubusercontent.com/AHMADALIPARR/sovereign-circuit-fabric/main/docs/images/stack.svg)
 
 | Layer | Language | Path |
 | --- | --- | --- |
@@ -30,6 +19,8 @@ Live BEAM UI driving this model (form posts, no client JS):
 | Forwarding | P4_16 | `datapath/p4/` |
 | Crossbar | VHDL | `hardware/vhdl/` |
 | Pricing | Erlang + UUIE | `accounting/` |
+
+Diagram: [docs/images/stack.svg](docs/images/stack.svg)
 
 ---
 
