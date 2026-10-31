@@ -7,9 +7,12 @@
 -module(circuit_actor).
 -behaviour(gen_statem).
 
--export([start_link/1, request/2, admit/1, reserve/1, install/2,
-         activate/1, drain/1, release/1, fail/2]).
--export([init/1, callback_mode/0, handle_event/4, terminate/3, code_change/4]).
+-export([start_link/1, request/2, admit/1, reject/2, reserve/1,
+         install/2, activate/1, drain/1, release/1, fail/2,
+         timeout/1, recycle/1]).
+-export([init/1, callback_mode/0, terminate/3, code_change/4]).
+-export([free/3, requested/3, admitted/3, reserved/3, installed/3,
+         active/3, draining/3, failed/3, released/3]).
 
 -record(circuit, {
           id            :: non_neg_integer(),
@@ -40,6 +43,9 @@ request(Pid, Spec) ->
 admit(Pid) ->
     gen_statem:call(Pid, admit).
 
+reject(Pid, Reason) ->
+    gen_statem:call(Pid, {reject, Reason}).
+
 reserve(Pid) ->
     gen_statem:call(Pid, reserve).
 
@@ -57,6 +63,12 @@ release(Pid) ->
 
 fail(Pid, Reason) ->
     gen_statem:call(Pid, {fail, Reason}).
+
+timeout(Pid) ->
+    gen_statem:call(Pid, timeout).
+
+recycle(Pid) ->
+    gen_statem:call(Pid, recycle).
 
 %%% gen_statem callbacks
 
@@ -94,10 +106,12 @@ free(EventType, Event, Data) ->
 %% REQUESTED
 requested({call, From}, admit, C) ->
     {next_state, admitted, C, [{reply, From, ok}]};
-requested({call, From}, {fail, Reason}, C) ->
-    {next_state, failed, C, [{reply, From, {failed, Reason}}]};
+requested({call, From}, {reject, Reason}, C) ->
+    {next_state, free, C#circuit{reserved_bps = 0},
+     [{reply, From, {rejected, Reason}}]};
 requested({call, From}, timeout, C) ->
-    {next_state, free, C, [{reply, From, timeout}]};
+    {next_state, free, C#circuit{reserved_bps = 0},
+     [{reply, From, timeout}]};
 requested(EventType, Event, Data) ->
     handle_common(EventType, Event, requested, Data).
 
