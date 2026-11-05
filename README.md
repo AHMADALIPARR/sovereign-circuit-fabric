@@ -420,7 +420,3 @@ Companion console work in `circuit-fabric` demonstrates interactive exercise of 
 | Reproducibility notes | Reproduce BEAM and UUIE tests on OTP 25+ and a C11 toolchain with sanitizers; reproduce TLC with the committed cfg; do not assume p4c/GHDL/Gödel/Dylan results without local execution evidence |
 
 Licensing is governed by the root `LICENSE` file (SnapKitty Opaque Source License text as committed). This README invents no additional authorship, funding, or institutional affiliation claims.
-
----
-
-*End of repository archive README. For operational status deltas after this revision, prefer updates to `STATUS.md` over silent README drift.*
